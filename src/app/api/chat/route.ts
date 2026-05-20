@@ -3,6 +3,7 @@ import {
   DeepSeekError,
   getServerChatConfig,
 } from "@/lib/deepseek";
+import { CHAT_MODELS } from "@/lib/types";
 import type { ChatMessagePayload, ChatRequestBody } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -59,6 +60,9 @@ export async function POST(request: Request) {
   const { defaultModel, systemPrompt, maxHistory } = getServerChatConfig();
   const model = body.model ?? defaultModel;
   const stream = body.stream !== false;
+  if (!CHAT_MODELS.some((item) => item.id === model)) {
+    return Response.json({ error: "不支持的模型" }, { status: 400 });
+  }
 
   let messages = validated.messages;
   if (systemPrompt?.trim() && !messages.some((m) => m.role === "system")) {

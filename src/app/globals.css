@@ -21,6 +21,27 @@
   --accent: #c15f3c;
 }
 
+html[data-theme="dark"] {
+  --bg-main: #181714;
+  --bg-sidebar: #201f1b;
+  --bg-elevated: #26241f;
+  --bg-hover: #302e28;
+  --bg-active: #3a342d;
+  --bg-input: #24231f;
+  --bg-user: #332f29;
+  --bg-code: #11100e;
+
+  --text-primary: #f4f1e8;
+  --text-secondary: #d2cdc0;
+  --text-muted: #9e988c;
+
+  --border-subtle: #343028;
+  --border-input: #4a453b;
+  --border-focus: #e2845f;
+
+  --accent: #e2845f;
+}
+
 @theme inline {
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;

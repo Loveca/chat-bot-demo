@@ -29,7 +29,26 @@ export interface ChatRequestBody {
   stream?: boolean;
 }
 
-export const DEFAULT_MODEL = "deepseek-chat";
+export type ChatModel = "deepseek-chat" | "deepseek-reasoner";
+
+export const DEFAULT_MODEL: ChatModel = "deepseek-chat";
+
+export const CHAT_MODELS: Array<{
+  id: ChatModel;
+  name: string;
+  description: string;
+}> = [
+  {
+    id: "deepseek-chat",
+    name: "DeepSeek Chat",
+    description: "通用对话",
+  },
+  {
+    id: "deepseek-reasoner",
+    name: "DeepSeek Reasoner",
+    description: "推理增强",
+  },
+];
 
 export const SUGGESTED_PROMPTS = [
   "用三句话解释量子纠缠",

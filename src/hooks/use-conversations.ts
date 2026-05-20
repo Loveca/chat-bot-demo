@@ -68,6 +68,17 @@ export function useConversations() {
     setActiveId(id);
   }, []);
 
+  const deleteConversation = useCallback((id: string) => {
+    setConversations((prev) => {
+      const next = prev.filter((conversation) => conversation.id !== id);
+      setActiveId((currentId) => {
+        if (currentId !== id) return currentId;
+        return next[0]?.id ?? null;
+      });
+      return next;
+    });
+  }, []);
+
   const updateConversation = useCallback(
     (id: string, updater: (conversation: Conversation) => Conversation) => {
       setConversations((prev) =>
@@ -179,6 +190,7 @@ export function useConversations() {
     activeConversation,
     createConversation,
     selectConversation,
+    deleteConversation,
     updateConversation,
     addMessage,
     updateMessage,

@@ -1,9 +1,16 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createId } from "@/lib/id";
 import { titleFromFirstMessage, validateMessageContent } from "@/lib/messages";
-import type { Conversation } from "@/lib/types";
+import { DEFAULT_MODEL, type ChatModel, type Conversation } from "@/lib/types";
+import {
+  loadModel,
+  loadTheme,
+  saveModel,
+  saveTheme,
+  type ThemeMode,
+} from "@/lib/storage";
 import { useChatStream } from "@/hooks/use-chat-stream";
 import { useConversations } from "@/hooks/use-conversations";
 import { AppLayout } from "@/components/layout/app-layout";
@@ -14,6 +21,11 @@ import { ChatInput } from "@/components/chat/chat-input";
 import { ErrorBanner } from "@/components/chat/error-banner";
 
 export function ChatApp() {
+  const [theme, setTheme] = useState<ThemeMode>("light");
+  const [model, setModel] = useState<ChatModel>(DEFAULT_MODEL);
+  const [preferencesHydrated, setPreferencesHydrated] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const {
     hydrated,
     conversations,
@@ -21,11 +33,33 @@ export function ChatApp() {
     activeConversation,
     createConversation,
     selectConversation,
+    deleteConversation,
     updateConversation,
     appendToMessage,
     updateMessage,
     ensureActiveConversation,
   } = useConversations();
+
+  useEffect(() => {
+    const storedTheme = loadTheme();
+    const storedModel = loadModel();
+    // Browser preferences are persisted separately from conversations.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTheme(storedTheme);
+    setModel(storedModel);
+    setPreferencesHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    if (!preferencesHydrated) return;
+    saveTheme(theme);
+  }, [preferencesHydrated, theme]);
+
+  useEffect(() => {
+    if (!preferencesHydrated) return;
+    saveModel(model);
+  }, [model, preferencesHydrated]);
 
   const onAppend = useCallback(
     (conversationId: string, messageId: string, delta: string) => {
@@ -46,9 +80,20 @@ export function ChatApp() {
   );
 
   const { isStreaming, error, clearError, send, abort } = useChatStream({
+    model,
     onAppend,
     onFinish,
   });
+
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  }, []);
+
+  const openSidebar = useCallback(() => setIsSidebarOpen(true), []);
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
+  const toggleSidebarCollapsed = useCallback(() => {
+    setIsSidebarCollapsed((current) => !current);
+  }, []);
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -113,16 +158,32 @@ export function ChatApp() {
 
   return (
     <AppLayout
+      isSidebarOpen={isSidebarOpen}
+      isSidebarCollapsed={isSidebarCollapsed}
+      onCloseSidebar={closeSidebar}
       sidebar={
         <Sidebar
           conversations={conversations}
           activeId={activeId}
+          collapsed={isSidebarCollapsed}
           onNewChat={createConversation}
-          onSelect={selectConversation}
+          onSelect={(id) => {
+            selectConversation(id);
+            closeSidebar();
+          }}
+          onDelete={deleteConversation}
+          onToggleCollapsed={toggleSidebarCollapsed}
         />
       }
     >
-      <ChatHeader title={activeConversation?.title ?? "新对话"} />
+      <ChatHeader
+        title={activeConversation?.title ?? "新对话"}
+        model={model}
+        theme={theme}
+        onOpenSidebar={openSidebar}
+        onModelChange={setModel}
+        onThemeToggle={toggleTheme}
+      />
       <ErrorBanner message={error} onDismiss={clearError} />
       <MessageList
         conversation={activeConversation}
