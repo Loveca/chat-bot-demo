@@ -5,18 +5,22 @@ interface ChatHeaderProps {
   title: string;
   model: ChatModel;
   theme: ThemeMode;
+  streamMode: boolean;
   onOpenSidebar: () => void;
   onModelChange: (model: ChatModel) => void;
   onThemeToggle: () => void;
+  onStreamToggle: () => void;
 }
 
 export function ChatHeader({
   title,
   model,
   theme,
+  streamMode,
   onOpenSidebar,
   onModelChange,
   onThemeToggle,
+  onStreamToggle,
 }: ChatHeaderProps) {
   return (
     <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--border-subtle)] px-4 md:px-6">
@@ -44,6 +48,19 @@ export function ChatHeader({
           </option>
         ))}
       </select>
+      <button
+        type="button"
+        onClick={onStreamToggle}
+        className={`flex h-8 items-center gap-1 rounded-md border px-2 text-xs transition ${
+          streamMode
+            ? "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
+            : "border-[var(--border-focus)] bg-[var(--accent)]/10 text-[var(--accent)]"
+        }`}
+        aria-label={streamMode ? "切换到非流式调试模式" : "切换到流式模式"}
+        title={streamMode ? "流式模式" : "调试模式"}
+      >
+        {streamMode ? "流式" : "调试"}
+      </button>
       <button
         type="button"
         onClick={onThemeToggle}

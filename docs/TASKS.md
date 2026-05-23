@@ -48,17 +48,17 @@
 - [x] 移动端抽屉侧边栏。
 - [x] 模型切换。
 - [x] 单条消息复制。
-- [ ] Phase 2 smoke test。
+- [x] Phase 2 smoke test。
 
 ## Phase 3 完善
 
-- [ ] 重新生成最后一条助手消息。
-- [ ] 会话重命名。
-- [ ] 消息数量较多时虚拟滚动。
-- [ ] `GET /api/health`。
-- [ ] 简单 rate limit。
-- [ ] 非流式调试响应。
-- [ ] 部署说明或 Dockerfile。
+- [x] 重新生成最后一条助手消息。
+- [x] 会话重命名。
+- [ ] 消息数量较多时虚拟滚动（当前消息量不需要，留待后续）。
+- [x] `GET /api/health`。
+- [x] 简单 rate limit。
+- [x] 非流式调试响应。
+- [x] 部署说明或 Dockerfile。
 
 ## MVP 自测清单
 

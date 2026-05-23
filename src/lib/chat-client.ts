@@ -3,6 +3,7 @@ import type { ChatMessagePayload } from "./types";
 export interface StreamChatOptions {
   messages: ChatMessagePayload[];
   model?: string;
+  stream?: boolean;
   signal?: AbortSignal;
   onDelta: (text: string) => void;
   onDone: () => void;
@@ -17,14 +18,15 @@ interface StreamChunk {
 }
 
 export async function streamChat(options: StreamChatOptions): Promise<void> {
-  const { messages, model, signal, onDelta, onDone, onError } = options;
+  const { messages, model, stream = true, signal, onDelta, onDone, onError } =
+    options;
 
   let response: Response;
   try {
     response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, model, stream: true }),
+      body: JSON.stringify({ messages, model, stream }),
       signal,
     });
   } catch (err) {
@@ -45,6 +47,18 @@ export async function streamChat(options: StreamChatOptions): Promise<void> {
       /* ignore */
     }
     onError(message);
+    return;
+  }
+
+  if (!stream) {
+    try {
+      const data = (await response.json()) as { content?: string };
+      const content = data.content ?? "";
+      if (content) onDelta(content);
+      onDone();
+    } catch {
+      onError("解析响应失败");
+    }
     return;
   }
 

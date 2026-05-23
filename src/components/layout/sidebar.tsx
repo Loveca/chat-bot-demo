@@ -10,6 +10,7 @@ interface SidebarProps {
   onNewChat: () => void;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
+  onRename: (id: string, title: string) => void;
   onToggleCollapsed: () => void;
 }
 
@@ -20,6 +21,7 @@ export function Sidebar({
   onNewChat,
   onSelect,
   onDelete,
+  onRename,
   onToggleCollapsed,
 }: SidebarProps) {
   return (
@@ -83,6 +85,7 @@ export function Sidebar({
           activeId={activeId}
           onSelect={onSelect}
           onDelete={onDelete}
+          onRename={onRename}
         />
       </div>
 

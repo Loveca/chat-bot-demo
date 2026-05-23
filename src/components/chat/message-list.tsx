@@ -9,12 +9,14 @@ interface MessageListProps {
   conversation: Conversation | null;
   isStreaming: boolean;
   onSuggest: (text: string) => void;
+  onRegenerate?: () => void;
 }
 
 export function MessageList({
   conversation,
   isStreaming,
   onSuggest,
+  onRegenerate,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -50,9 +52,20 @@ export function MessageList({
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="mx-auto max-w-3xl py-6">
-        {conversation.messages.map((message) => (
-          <MessageItem key={message.id} message={message} />
-        ))}
+        {conversation.messages.map((message, index) => {
+          const isLastAssistant =
+            message.role === "assistant" &&
+            index === conversation.messages.length - 1;
+          return (
+            <MessageItem
+              key={message.id}
+              message={message}
+              isLastAssistant={isLastAssistant}
+              isStreaming={isStreaming}
+              onRegenerate={onRegenerate}
+            />
+          );
+        })}
         <div ref={bottomRef} className="h-4" />
       </div>
     </div>

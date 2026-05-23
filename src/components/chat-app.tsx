@@ -23,6 +23,7 @@ import { ErrorBanner } from "@/components/chat/error-banner";
 export function ChatApp() {
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [model, setModel] = useState<ChatModel>(DEFAULT_MODEL);
+  const [streamMode, setStreamMode] = useState(true);
   const [preferencesHydrated, setPreferencesHydrated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -34,6 +35,7 @@ export function ChatApp() {
     createConversation,
     selectConversation,
     deleteConversation,
+    renameConversation,
     updateConversation,
     appendToMessage,
     updateMessage,
@@ -81,6 +83,7 @@ export function ChatApp() {
 
   const { isStreaming, error, clearError, send, abort } = useChatStream({
     model,
+    stream: streamMode,
     onAppend,
     onFinish,
   });
@@ -94,6 +97,40 @@ export function ChatApp() {
   const toggleSidebarCollapsed = useCallback(() => {
     setIsSidebarCollapsed((current) => !current);
   }, []);
+
+  const handleRegenerate = useCallback(async () => {
+    if (!activeConversation || isStreaming) return;
+    const messages = activeConversation.messages;
+    if (messages.length === 0) return;
+
+    const last = messages[messages.length - 1];
+    if (last.role !== "assistant") return;
+
+    const trimmed: Conversation = {
+      ...activeConversation,
+      messages: messages.slice(0, -1),
+    };
+    const assistantId = createId();
+    const now = Date.now();
+
+    const updatedConversation: Conversation = {
+      ...trimmed,
+      updatedAt: now,
+      messages: [
+        ...trimmed.messages,
+        {
+          id: assistantId,
+          role: "assistant",
+          content: "",
+          createdAt: now,
+          status: "streaming",
+        },
+      ],
+    };
+
+    updateConversation(activeConversation.id, () => updatedConversation);
+    await send(activeConversation.id, updatedConversation, assistantId);
+  }, [activeConversation, isStreaming, send, updateConversation]);
 
   const handleSend = useCallback(
     async (text: string) => {
@@ -172,6 +209,7 @@ export function ChatApp() {
             closeSidebar();
           }}
           onDelete={deleteConversation}
+          onRename={renameConversation}
           onToggleCollapsed={toggleSidebarCollapsed}
         />
       }
@@ -180,15 +218,18 @@ export function ChatApp() {
         title={activeConversation?.title ?? "新对话"}
         model={model}
         theme={theme}
+        streamMode={streamMode}
         onOpenSidebar={openSidebar}
         onModelChange={setModel}
         onThemeToggle={toggleTheme}
+        onStreamToggle={() => setStreamMode((prev) => !prev)}
       />
       <ErrorBanner message={error} onDismiss={clearError} />
       <MessageList
         conversation={activeConversation}
         isStreaming={isStreaming}
         onSuggest={handleSend}
+        onRegenerate={handleRegenerate}
       />
       <ChatInput
         isStreaming={isStreaming}

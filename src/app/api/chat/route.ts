@@ -3,6 +3,7 @@ import {
   DeepSeekError,
   getServerChatConfig,
 } from "@/lib/deepseek";
+import { rateLimit } from "@/lib/rate-limit";
 import { CHAT_MODELS } from "@/lib/types";
 import type { ChatMessagePayload, ChatRequestBody } from "@/lib/types";
 
@@ -45,6 +46,18 @@ function validateMessages(
 }
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "anonymous";
+  const limit = rateLimit(ip);
+  if (!limit.ok) {
+    return Response.json(
+      { error: "请求过于频繁，请稍后再试" },
+      { status: 429 },
+    );
+  }
+
   let body: ChatRequestBody;
   try {
     body = (await request.json()) as ChatRequestBody;

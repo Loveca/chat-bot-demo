@@ -8,6 +8,7 @@ import { DEFAULT_MODEL } from "@/lib/types";
 
 interface UseChatStreamOptions {
   model?: string;
+  stream?: boolean;
   onAppend: (conversationId: string, messageId: string, delta: string) => void;
   onFinish: (
     conversationId: string,
@@ -17,7 +18,7 @@ interface UseChatStreamOptions {
 }
 
 export function useChatStream(options: UseChatStreamOptions) {
-  const { model = DEFAULT_MODEL, onAppend, onFinish } = options;
+  const { model = DEFAULT_MODEL, stream = true, onAppend, onFinish } = options;
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -46,6 +47,7 @@ export function useChatStream(options: UseChatStreamOptions) {
       await streamChat({
         messages: apiMessages,
         model,
+        stream,
         signal: controller.signal,
         onDelta: (text) => {
           onAppend(conversationId, assistantMessageId, text);
@@ -67,7 +69,7 @@ export function useChatStream(options: UseChatStreamOptions) {
         },
       });
     },
-    [model, onAppend, onFinish],
+    [model, stream, onAppend, onFinish],
   );
 
   return {

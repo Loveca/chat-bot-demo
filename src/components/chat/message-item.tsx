@@ -6,12 +6,20 @@ import { MarkdownContent } from "./markdown-content";
 
 interface MessageItemProps {
   message: Message;
+  isLastAssistant: boolean;
+  isStreaming: boolean;
+  onRegenerate?: () => void;
 }
 
-export function MessageItem({ message }: MessageItemProps) {
+export function MessageItem({
+  message,
+  isLastAssistant,
+  isStreaming,
+  onRegenerate,
+}: MessageItemProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
   const isUser = message.role === "user";
-  const isStreaming = message.status === "streaming";
+  const isMsgStreaming = message.status === "streaming";
 
   const copyMessage = async () => {
     try {
@@ -35,6 +43,18 @@ export function MessageItem({ message }: MessageItemProps) {
     </button>
   );
 
+  const regenerateButton =
+    isLastAssistant && onRegenerate && !isStreaming ? (
+      <button
+        type="button"
+        onClick={onRegenerate}
+        className="rounded-md px-2 py-1 text-xs text-[var(--text-muted)] transition hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+        aria-label="重新生成回复"
+      >
+        重新生成
+      </button>
+    ) : null;
+
   if (isUser) {
     return (
       <div className="group flex justify-end px-4 py-3 md:px-8">
@@ -53,15 +73,16 @@ export function MessageItem({ message }: MessageItemProps) {
   return (
     <div className="px-4 py-3 md:px-8">
       <div className="group mx-auto max-w-3xl">
-        <MarkdownContent content={message.content} isStreaming={isStreaming} />
+        <MarkdownContent content={message.content} isStreaming={isMsgStreaming} />
         {message.status === "error" && (
           <p className="mt-2 text-sm text-red-600">生成失败，请重试</p>
         )}
         {message.status === "aborted" && (
           <p className="mt-2 text-sm text-[var(--text-muted)]">已停止生成</p>
         )}
-        <div className="mt-2 opacity-0 transition focus-within:opacity-100 group-hover:opacity-100">
+        <div className="mt-2 flex gap-1 opacity-0 transition focus-within:opacity-100 group-hover:opacity-100">
           {copyButton}
+          {regenerateButton}
         </div>
       </div>
     </div>
