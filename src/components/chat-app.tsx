@@ -193,6 +193,9 @@ export function ChatApp() {
     );
   }
 
+  const isEmptyConversation =
+    !activeConversation || activeConversation.messages.length === 0;
+
   return (
     <AppLayout
       isSidebarOpen={isSidebarOpen}
@@ -225,15 +228,19 @@ export function ChatApp() {
         onStreamToggle={() => setStreamMode((prev) => !prev)}
       />
       <ErrorBanner message={error} onDismiss={clearError} />
-      <MessageList
-        conversation={activeConversation}
-        isStreaming={isStreaming}
-        onSuggest={handleSend}
-        onRegenerate={handleRegenerate}
-      />
+      {!isEmptyConversation && (
+        <MessageList
+          conversation={activeConversation}
+          isStreaming={isStreaming}
+          onSuggest={handleSend}
+          onRegenerate={handleRegenerate}
+        />
+      )}
       <ChatInput
+        homeMode={isEmptyConversation}
         isStreaming={isStreaming}
         onSend={handleSend}
+        onSuggest={handleSend}
         onStop={abort}
       />
     </AppLayout>

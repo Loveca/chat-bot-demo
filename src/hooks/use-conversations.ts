@@ -68,20 +68,17 @@ export function useConversations() {
     setActiveId(id);
   }, []);
 
-  const renameConversation = useCallback(
-    (id: string, title: string) => {
-      setConversations((prev) =>
-        sortConversations(
-          prev.map((c) =>
-            c.id === id
-              ? { ...c, title: title.trim() || c.title, updatedAt: Date.now() }
-              : c,
-          ),
+  const renameConversation = useCallback((id: string, title: string) => {
+    setConversations((prev) =>
+      sortConversations(
+        prev.map((c) =>
+          c.id === id
+            ? { ...c, title: title.trim() || c.title, updatedAt: Date.now() }
+            : c,
         ),
-      );
-    },
-    [],
-  );
+      ),
+    );
+  }, []);
 
   const deleteConversation = useCallback((id: string) => {
     setConversations((prev) => {

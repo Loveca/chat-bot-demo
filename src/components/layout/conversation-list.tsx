@@ -11,6 +11,8 @@ interface ConversationListProps {
   onRename: (id: string, title: string) => void;
 }
 
+const fallbackItems = ["介绍下日本的文化", "帮我写一封产品经理岗位的求职信", "解释一下什么是量子计算", "如何提高睡眠质量"];
+
 export function ConversationList({
   conversations,
   activeId,
@@ -37,26 +39,35 @@ export function ConversationList({
 
   if (conversations.length === 0) {
     return (
-      <p className="px-3 py-2 text-xs text-[var(--text-muted)]">
-        暂无历史对话
-      </p>
+      <div className="flex flex-col gap-1">
+        {fallbackItems.map((item) => (
+          <div
+            key={item}
+            className="flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-[var(--text-secondary)]"
+          >
+            <span className="text-[13px] text-[var(--text-muted)]">□</span>
+            <span className="truncate">{item}</span>
+          </div>
+        ))}
+      </div>
     );
   }
 
   return (
-    <nav className="flex flex-col gap-0.5 px-2">
+    <nav className="flex flex-col gap-1">
       {conversations.map((conversation) => {
         const isActive = conversation.id === activeId;
         const isEditing = editingId === conversation.id;
         return (
           <div
             key={conversation.id}
-            className={`group flex items-center gap-1 rounded-lg transition ${
+            className={`group flex h-9 items-center gap-1 rounded-lg transition ${
               isActive
                 ? "bg-[var(--bg-active)] text-[var(--text-primary)]"
                 : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
             }`}
           >
+            <span className="pl-2 text-[13px] text-[var(--text-muted)]">□</span>
             {isEditing ? (
               <input
                 ref={inputRef}
@@ -67,14 +78,14 @@ export function ConversationList({
                   if (e.key === "Enter") submitRename();
                   if (e.key === "Escape") setEditingId(null);
                 }}
-                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-left text-sm text-[var(--text-primary)] outline-none"
+                className="min-w-0 flex-1 bg-transparent py-1 text-left text-sm text-[var(--text-primary)] outline-none"
               />
             ) : (
               <button
                 type="button"
                 onClick={() => onSelect(conversation.id)}
                 onDoubleClick={() => startRename(conversation)}
-                className="min-w-0 flex-1 truncate px-3 py-2 text-left text-sm"
+                className="min-w-0 flex-1 truncate py-1 text-left text-sm"
                 title={conversation.title}
               >
                 {conversation.title}
@@ -85,7 +96,7 @@ export function ConversationList({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (window.confirm(`删除对话"${conversation.title}"？`)) {
+                  if (window.confirm(`删除对话“${conversation.title}”？`)) {
                     onDelete(conversation.id);
                   }
                 }}

@@ -1,45 +1,59 @@
 @import "tailwindcss";
 
 :root {
-  --bg-main: #faf9f5;
-  --bg-sidebar: #f5f4ef;
-  --bg-elevated: #ffffff;
-  --bg-hover: #eeede8;
-  --bg-active: #e8e6df;
-  --bg-input: #ffffff;
-  --bg-user: #eeede8;
-  --bg-code: #f5f4ef;
+  --bg-main: #fbfaf7;
+  --bg-sidebar: #f4f1ea;
+  --bg-elevated: #fffefa;
+  --bg-hover: #ebe7dd;
+  --bg-active: #e9e3d8;
+  --bg-input: #fffefa;
+  --bg-user: #eee9df;
+  --bg-code: #f2eee5;
 
-  --text-primary: #1a1915;
-  --text-secondary: #3d3d3a;
-  --text-muted: #6b6a65;
+  --text-primary: #241f19;
+  --text-secondary: #4f4942;
+  --text-muted: #787168;
 
-  --border-subtle: #e5e4df;
-  --border-input: #d9d8d3;
-  --border-focus: #c15f3c;
+  --border-subtle: #ded8cc;
+  --border-soft: #e8e1d5;
+  --border-input: #d8d1c5;
+  --border-focus: #c76443;
 
-  --accent: #c15f3c;
+  --accent: #cf6847;
+  --accent-strong: #b95739;
+  --accent-soft: #e4aa94;
+  --accent-faint: #f8ebe5;
+
+  --badge-bg: #ece5f4;
+  --badge-text: #65498e;
 }
 
 html[data-theme="dark"] {
-  --bg-main: #181714;
-  --bg-sidebar: #201f1b;
-  --bg-elevated: #26241f;
-  --bg-hover: #302e28;
-  --bg-active: #3a342d;
-  --bg-input: #24231f;
-  --bg-user: #332f29;
+  --bg-main: #171512;
+  --bg-sidebar: #211f1a;
+  --bg-elevated: #28251f;
+  --bg-hover: #302c25;
+  --bg-active: #3b342b;
+  --bg-input: #26231e;
+  --bg-user: #342f28;
   --bg-code: #11100e;
 
-  --text-primary: #f4f1e8;
-  --text-secondary: #d2cdc0;
-  --text-muted: #9e988c;
+  --text-primary: #f6f0e6;
+  --text-secondary: #d5ccbd;
+  --text-muted: #a69c8d;
 
-  --border-subtle: #343028;
-  --border-input: #4a453b;
+  --border-subtle: #3d362d;
+  --border-soft: #332e27;
+  --border-input: #4a4237;
   --border-focus: #e2845f;
 
   --accent: #e2845f;
+  --accent-strong: #ef946c;
+  --accent-soft: #9b5d46;
+  --accent-faint: #3a271f;
+
+  --badge-bg: #342b42;
+  --badge-text: #d9c7ff;
 }
 
 @theme inline {
@@ -61,6 +75,13 @@ body {
   background: var(--bg-main);
   color: var(--text-primary);
   font-family: var(--font-sans);
+}
+
+button,
+select,
+textarea,
+input {
+  font: inherit;
 }
 
 .markdown-body pre {

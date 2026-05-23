@@ -57,9 +57,9 @@ export function MessageItem({
 
   if (isUser) {
     return (
-      <div className="group flex justify-end px-4 py-3 md:px-8">
-        <div className="flex max-w-[85%] flex-col items-end gap-1">
-          <div className="rounded-2xl bg-[var(--bg-user)] px-4 py-2.5 text-[15px] leading-relaxed text-[var(--text-primary)]">
+      <div className="group flex justify-end py-3">
+        <div className="flex max-w-[82%] flex-col items-end gap-1">
+          <div className="rounded-[18px] bg-[var(--bg-user)] px-4 py-2.5 text-[15px] leading-relaxed text-[var(--text-primary)]">
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>
           <div className="opacity-0 transition focus-within:opacity-100 group-hover:opacity-100">
@@ -71,8 +71,8 @@ export function MessageItem({
   }
 
   return (
-    <div className="px-4 py-3 md:px-8">
-      <div className="group mx-auto max-w-3xl">
+    <div className="py-5">
+      <div className="group">
         <MarkdownContent content={message.content} isStreaming={isMsgStreaming} />
         {message.status === "error" && (
           <p className="mt-2 text-sm text-red-600">生成失败，请重试</p>
